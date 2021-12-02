@@ -25,9 +25,13 @@ class CommonUtil:
         '''
         判断两个字典是否相等
         '''
-        if isinstance(dict_one,str):
+        print("dict_one",dict_one)
+        print("dict_two",dict_two)
+        print(type(dict_one))
+        print(type(dict_two))
+        if isinstance(dict_one,dict):
             dict_one = json.loads(dict_one)
-        if isinstance(dict_two,str):
+        if isinstance(dict_two,dict):
             dict_two = json.loads(dict_two)
         return operator.eq(dict_one,dict_two)
 

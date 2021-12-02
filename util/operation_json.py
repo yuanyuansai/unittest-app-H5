@@ -3,10 +3,17 @@ import json
 class OperationJson:
     def __init__(self,file_path = None):
         if file_path == None:
-            self.file_path = '../dataconfig/user.json'
+            self.file_path = '../dataconfig/header'
         else:
             self.file_path = file_path
-        self.data = self.read_data()
+        self.data = self.read_file()
+
+
+    #读文件内容
+    def read_file(self):
+        with open(self.file_path) as fp:
+            data=fp.read()
+            return data
 
     #读取json文件
     def read_data(self):
@@ -17,6 +24,7 @@ class OperationJson:
     #根据关键字获取数据
     def get_data(self,id):
         print(type(self.data))
+        print(self.data[id])
         return self.data[id]
 
     #写json

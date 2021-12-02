@@ -1,6 +1,6 @@
 import requests
 import json
-from operation_json import OperationJson
+from util.operation_json import OperationJson
 
 class OperationHeader:
     def __init__(self,response):
@@ -26,13 +26,13 @@ class OperationHeader:
         op_json.write_data(cookie)
 
 if __name__ == '__main__':
-    url = "http://m.imooc.com/passport/user/login"
+    url = "https://api-dev.1911edu.com/AdultApi/v4_4/StudyCard/hasUnExchangeStudyCard"
     data = {
-        "username": "18513199586",
-        "password": "111111",
-        "verify": "",
-        "referer": "https://m.imooc.com"
+        "channel": "AppStore",
+        "device_model": "iphone XS Max",
+        "phone": "18231040441",
+        "sms_code": ""
     }
-    res = json.dumps(requests.post(url,data).json())
+    res = json.dumps(requests.get(url).json())
     op_header = OperationHeader(res)
     op_header.write_cookie()

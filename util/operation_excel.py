@@ -6,7 +6,7 @@ class OperationExcel:
             self.file_name = file_name
             self.sheet_id = sheet_id
         else:
-            self.file_name = '../dataconfig/case1.xls'
+            self.file_name = '../case/case.xls'
             self.sheet_id = 0
         self.data = self.get_data()
     #获取sheets的内容
