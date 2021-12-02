@@ -1,43 +1,68 @@
-import smtplib
+# coding=utf-8
 from email.mime.text import MIMEText
-class SendEmail:
+import time
+import smtplib
+import getpass
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+import email
+import os
+
+class sendEmail:
     global send_user
     global email_host
     global password
     email_host = "smtp.126.com"
     send_user = "xiaoyuan870@126.com"
     password = "USFRFESMSMNTPRGL"
+    def sendmain(file_path, mail_to='383112433@qq.com'):
+        mail_from = 'xiaoyuan870@126.com'  # 发送邮件账号
+        f = open(file_path, 'rb')
+        mail_body = f.read()
+        f.close()
 
-    def send_mail(self,user_list,sub,content):
-        user = "USFRFESMSMNTPRGL"+"<"+send_user+">"
-        message = MIMEText(content,_subtype='plain',_charset='utf-8')
-        message['Subject'] = sub
-        message['From'] = user
-        message['To'] = ";".join(user_list)
-        server = smtplib.SMTP()
-        server.connect(email_host)
-        server.login(send_user,password)
-        server.sendmail(user,user_list,message.as_string())
-        server.close()
-    def send_main(self,pass_list,fail_list):
-        pass_num = float(len(pass_list))
-        print("pass_num:",pass_num)
-        fail_num = float(len(fail_list))
-        print("fail_num",fail_num)
-        count_num = pass_num+fail_num
+        # msg = email.MIMEMultipart.MIMEMultipart()
+        msg = MIMEMultipart()
 
-        pass_result = "%.2f%%" %(pass_num/count_num*100)
-        fail_result = "%.2f%%" %(fail_num/count_num*100)
+        # 构造MIMEBase对象做为文件附件内容并附加到根容器
+        contype = 'application/octet-stream'
+        maintype, subtype = contype.split('/', 1)
 
+        ## 读入文件内容并格式化
+        data = open(file_path, 'rb')
+        file_msg = MIMEBase(maintype, subtype)
+        file_msg.set_payload(data.read())
+        data.close()
+        encoders.encode_base64(file_msg)
 
-        print("count_num",count_num)
-        content = "此次一共运行接口个数为%s个，通过个数为%s个，失败个数为%s,通过率为%s,失败率为%s" % (
-        count_num, pass_num, fail_num, pass_result, fail_result)
-        print(content)
-        user_list = ['383112433@qq.com']
-        sub = "接口自动化测试报告"
-        self.send_mail(user_list,sub,content)
+        ## 设置附件头
+        basename = os.path.basename(file_path)
+        file_msg.add_header('Content-Disposition',
+                            'attachment', filename=basename)
+        msg.attach(file_msg)
+        print(u'msg 附件添加成功')
+
+        msg1 = MIMEText(mail_body, _subtype='html', _charset='utf-8')
+        msg.attach(msg1)
+
+        if isinstance(mail_to, str):
+            msg['To'] = mail_to
+        else:
+            msg['To'] = ','.join(mail_to)
+        msg['From'] = mail_from
+        msg['Subject'] = u'接口自动化测试报告'
+        msg['date'] = time.strftime('%Y-%m-%d-%H_%M_%S')
+        print(msg['date'])
+
+        smtp = smtplib.SMTP()
+        smtp.connect(email_host)
+        smtp.login(send_user, password)  # 发送邮件账号密码
+        smtp.sendmail(mail_from, mail_to, msg.as_string())
+        smtp.quit()
+        print('email has send out !')
+
 
 if __name__ == '__main__':
-    sen = SendEmail()
-    sen.send_main([1,2,3,4],[1,2,3,4,5,6,7],)
+    sendEmail.sendmain(r'D:\unittest\report\1.html')

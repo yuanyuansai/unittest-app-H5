@@ -2,51 +2,31 @@
 #coding = utf-8
 
 import unittest, time, re
-import HTMLTestRunner,os
-import xlrd
-import sys
-#reload(sys)
-#sys.setdefaultencoding('utf8')
+from util import HTMLTestRunner
+import os
+from util.send_email import sendEmail
+class RunTest:
+    def go_on_run(self):
+        #调用creatsuite方法，返回需要添加的test*.py文件组成的测试套件
+        now = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
+        report = os.path.join(os.getcwd(), "report\\")
+        filename = report + now + 'result.html'
+        print(filename)
+        suite=unittest.TestSuite()
+        loader=unittest.TestLoader()
+        suite.addTest(loader.discover(os.path.join(os.getcwd(), "test_case\\")))
 
+        runner = HTMLTestRunner.HTMLTestRunner(stream=open(filename, "wb"),  # 打开一个报告文件，将句柄传给stream
+                                description="",  # 报告中显示的描述信息
+                                title="接口测试报告")  # 报告的标题
 
-def creatsuite():
-
-    #1---找到所有的test*py文件
-    testunit = unittest.TestSuite()
-    #定义测试文件查找目录
-    # test_dir = os.path.join(os.getcwd(), "test_case")
-    test_dir = r"D:\BaiduNetdiskDownload\个人\unittest\test_case"
-    print("test_dir:",test_dir)
-    #定义discover方法的参数
-    discover= unittest.defaultTestLoader.discover(
-
-            test_dir,
-            pattern = 'test*.py',
-            top_level_dir = None
-
-            )
-
-        
-    return testunit
-
-
-#3---测试报告
-now = time.strftime("%Y-%m-%d-%H_%M_%S",time.localtime(time.time()))
-
-#定义个报告存放路径，支持相对路径。
-report = os.path.join(os.getcwd(), "report\\")
-print(report)
-filename = report+now+'result.html'
-fp = open(filename, 'wb')
-runner =HTMLTestRunner.HTMLTestRunner(
-    stream=fp,
-    title='guanlihoutai_test_report',
-    description=u'test_case_description')
-
-
+        # 使用启动器去执行测试套件里的用例
+        runner.run(suite)
+        sendEmail.sendmain(filename)
 
 if __name__ == '__main__':
-    #调用creatsuite方法，返回需要添加的test*.py文件组成的测试套件
-    alltestnames = creatsuite()
-    runner.run(alltestnames)
-    fp.close()
+    run=RunTest()
+    run.go_on_run()
+
+
+
